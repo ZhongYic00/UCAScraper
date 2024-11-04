@@ -172,7 +172,7 @@
           'timeMin': (new Date()).toISOString(),
           'showDeleted': false,
           'singleEvents': true,
-          'maxResults': 100,
+          'maxResults': 200,
           'orderBy': 'startTime',
         };
         const response = await gapi.client.calendar.events.list(request);        
@@ -194,6 +194,7 @@
             changes: changes
           })
         }
+        const now = new Date()
         for (let t of talksToUpload) {
           const event = {
             summary: t.name,
@@ -205,8 +206,10 @@
             },
             location: t.details.mainVenue,
             description: t.details.introduction,
+            colorId: t.name.includes("明德")? 7 : undefined
           }
-          console.log(event)
+          if(event.start.dateTime < now)
+            continue;
           if (talkIds.has(event.summary)) {
             const {summary, ...changes} = event
             patchEvent(talkIds.get(event.summary), changes)
